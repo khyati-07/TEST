@@ -1,0 +1,23 @@
+ work only only on SS and FRU parameter.
+
+ For TLR_SS (20 Marks)
+SS = f (NT, NE) × 15 + f(NP) × 5
+The functions f (NT, NE) and f(Np) are determined
+by NIRF.
+NT represents the total sanctioned approved intake
+in the institution, including all undergraduate (UG)
+and postgraduate (PG) programs.
+
+
+For TLR_FRU (30 Marks)
+FRU = 7.5 × f(BC) + 22.5 × f(BO)
+BC represents the average annual capital
+expenditure per student for the past three years,
+specifically related to the engineering discipline.
+This excludes any expenditure on the construction
+of new buildings. 
+BO represents the average annual operational (or
+recurring) expenditure per student for the previous
+three years, pertaining to the engineering discipline
+only. This excludes expenses related to the
+maintenance of hostels and allied services.
