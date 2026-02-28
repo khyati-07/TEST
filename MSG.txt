@@ -21,3 +21,76 @@ recurring) expenditure per student for the previous
 three years, pertaining to the engineering discipline
 only. This excludes expenses related to the
 maintenance of hostels and allied services.
+
+
+
+
+
+
+
+🎓 What is this research paper about?
+The Problem
+India's government ranks all colleges every year through a system called NIRF (National Institutional Ranking Framework). It scores colleges on things like:
+•	How many students they have
+•	How much money they spend on education
+•	How many PhD students they have, etc.
+The scores are calculated using mathematical functions like:
+"SS = f(NT, NE) × 15 + f(NP) × 5"
+The problem is — NIRF never tells anyone what these f(...) functions actually are. They're secret black boxes. So colleges can't figure out exactly how their score is calculated or how to improve it.
+The Solution the Paper Proposes
+Use Machine Learning to reverse-engineer those hidden functions. Basically: "We have the inputs and the outputs — let's train a model to learn what's in between."
+________________________________________
+📊 What data do we have?
+File	What it contains
+TLR_SS.csv
+186 colleges with columns: NT (seats sanctioned), NE (students enrolled), NP (PhD students) → and the actual SS score
+TLR_FRU.csv
+186 colleges with columns: BC (capital spend/student), BO (operational spend/student) → and the actual FRU score
+________________________________________
+🧠 Code Walkthrough — Section by Section
+Section 0 — Imports
+Loads all the tools needed: pandas for data, sklearn for ML models, matplotlib for charts, xgboost for the XGB model, and scikit-optimize for smart hyperparameter tuning.
+Section 1 — Load Data
+Reads both CSV files. Drops any rows with missing values. Prints how many colleges are in each dataset (186 in both).
+
+Section 2 — Define Features & Targets
+•	For SS: inputs = [NT, NE, NP], output = SS score
+•	For FRU: inputs = [BC, BO], output = FRU score
+Splits each dataset 80% training / 20% testing — the model learns on 148 colleges and is tested on 38.
+
+Section 3 — Define 8 Models
+Defines all 8 models the paper tested, each wrapped in a Pipeline (which bundles data scaling + the model together cleanly):
+#	Model	What it does simply
+1	Linear Regression	Fits a straight line through the data
+2	Polynomial Regression	Fits a curved line (degree 2–4)
+3	KNN	Predicts based on the K nearest similar colleges
+4	SVR	Finds the best-fit curve with a margin of tolerance
+5	Decision Tree	Asks a series of yes/no questions to reach a prediction
+6	Random Forest	Builds 100s of decision trees and averages their answers
+7	CNN (MLP)	A small neural network with hidden layers
+8	XGBoost	Builds trees sequentially, each one fixing the previous one's mistakes
+
+Section 4 — Train, Tune & Evaluate
+For each model:
+1.	BayesSearchCV (Bayesian optimization) tries different hyperparameter combinations smartly (not randomly), using 5-fold cross-validation to find the best settings
+2.	The best version of the model is then tested on the held-out 38 colleges
+3.	MSE (Mean Squared Error) is computed — lower = better
+MSE=∑(y^n−yn)2NMSE=N∑(y^n−yn)2
+
+Section 5 — MSE Table
+Prints a clean table comparing all 8 models side by side for both SS and FRU.
+
+Section 6 — Ranking
+Ranks each model from 1 (worst MSE) to 8 (best MSE) for each parameter, then sums up to get a cumulative rank — the model with the lowest cumulative rank wins overall. The paper found Random Forest wins across all parameters.
+
+Section 7 — Plots (6 charts saved as PNG)
+•	Actual vs Predicted — scatter of real scores + lines of each model's predictions, sorted so you can see how well they track
+•	MSE Bar Chart — visual side-by-side comparison of all models
+•	Cumulative Rank Chart — horizontal bar chart showing the overall winner
+•	Residual Plots — for each model, shows the errors (predicted − actual). A good model has residuals scattered randomly around zero
+
+Section 8 — Verification & CSV Output
+Uses the best model to predict scores for all 186 colleges, saves the predicted vs actual comparison to:
+•	TLR_SS_predictions.csv
+•	TLR_FRU_predictions.csv
+
